@@ -43,6 +43,7 @@ public class Main {
                         new Integer(value[0]) * new Integer(value[1]) :
                         new Integer(value[0]) / new Integer(value[1]);
                 str = str.replace(m.group(), String.valueOf(res));
+                break;
             }
         }
         while (!str.matches("\\d+")) {
@@ -54,6 +55,7 @@ public class Main {
                         new Integer(value[0]) + new Integer(value[1]) :
                         new Integer(value[0]) - new Integer(value[1]);
                 str = str.replace(m.group(), String.valueOf(res));
+                break;
             }
         }
         return str;
