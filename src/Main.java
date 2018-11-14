@@ -8,8 +8,8 @@ public class Main {
     public static void main(String[] args) {
         String str = "4*5+(6-5)*5+6*8+(6*5+(5+4)*8+(11*4+6/5)+44-5)";
 
-        while (str.matches("\\([\\d+\\-*\\/\\s]*\\)")) {
-            Pattern p = Pattern.compile("\\([\\d+\\-*\\/\\s]*\\)");
+        while (!str.matches("\\d+")) {
+            Pattern p = Pattern.compile("\\([-\\d\\+\\*\\/]*\\)");
             Matcher m = p.matcher(str);
             String res = "";
             while (m.find()) {
@@ -20,29 +20,25 @@ public class Main {
     }
 
     private static String calculate(String str) {
-        while (str.matches("[*/]+")) {
-            Pattern p = Pattern.compile("\\d+[*/]\\d");
-            Matcher m = p.matcher(str);
-            while (m.find()) {
-                String[] temp = m.group().split("[*/]");
-                Integer res = m.group().matches("[*]") ?
-                        new Integer(temp[0]) * new Integer(temp[1]) :
-                        new Integer(temp[0]) / new Integer(temp[1]);
-                str.replace(m.group(), String.valueOf(res));
-            }
+        Pattern p = Pattern.compile("\\d+[\\*\\/]\\d+");
+        Matcher m = p.matcher(str);
+        while (m.find()) {
+            String[] value = m.group().split("[\\*\\/]");
+            Integer res = m.group().matches("\\d+[\\*]\\d+") ?
+                    new Integer(value[0]) * new Integer(value[1]) :
+                    new Integer(value[0]) / new Integer(value[1]);
+            str.replace(m.group(), String.valueOf(res));
         }
-        while (str.matches("[+-]+")) {
-            Pattern p = Pattern.compile("\\d+[+-]\\d");
-            Matcher m = p.matcher(str);
-            while (m.find()) {
-                String[] temp = m.group().split("[+-]");
-                Integer res = m.group().matches("[+]") ?
-                        new Integer(temp[0]) + new Integer(temp[1]) :
-                        new Integer(temp[0]) - new Integer(temp[1]);
-                str.replace(m.group(), String.valueOf(res));
-            }
+        p = Pattern.compile("\\d+[-\\+]\\d+");
+        m = p.matcher(str);
+        while (m.find()) {
+            String[] value = m.group().split("[-\\+]");
+            Integer res = m.group().matches("\\d+[\\+]\\d+") ?
+                    new Integer(value[0]) + new Integer(value[1]) :
+                    new Integer(value[0]) - new Integer(value[1]);
+            str.replace(m.group(), String.valueOf(res));
         }
-        return "(" + str + ")";
+        return str;
     }
 
 }
