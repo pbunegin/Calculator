@@ -6,17 +6,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
-    Stack<String> stack = new Stack<>();
-
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String str = reader.readLine();
 
         try {
             while (!str.matches("\\d+")) {
+                //находим выражение без вложенных скобок
                 Pattern p = Pattern.compile("\\([-\\d\\+\\*\\/]*\\)");
                 Matcher m = p.matcher(str);
                 if (!str.contains("(")) {
+                    //считаем
                     str = calculate(str);
                     break;
                 }
@@ -30,7 +30,7 @@ public class Main {
         System.out.println(str);
     }
 
-    //4*5/(6-5)*5+6*8+(6*5*(5+4)*8+(11*4+6/5)+44-5)
+    //4*5/(6-5)*5+6*8+(6*5*(5+4)*8+(11*4-5*5+6/5*5)+44-5)
 
     private static String calculate(String str) throws ArithmeticException{
         str = str.replaceAll("[\\(\\)]", "");
@@ -42,7 +42,7 @@ public class Main {
                 Integer res = m.group().matches("\\d+[\\*]\\d+") ?
                         new Integer(value[0]) * new Integer(value[1]) :
                         new Integer(value[0]) / new Integer(value[1]);
-                str = str.replace(m.group(), String.valueOf(res));
+                str = str.replaceFirst(m.group().replaceAll("[\\*\\/]","\\\\*"), String.valueOf(res));
                 break;
             }
         }
