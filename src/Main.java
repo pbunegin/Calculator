@@ -11,17 +11,7 @@ public class Main {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, Charset.forName("UTF-8")))) {
             String str = reader.readLine();
 
-            if (str!= null) {
-                if (str.replaceAll("[^\\(]", "").length() != str.replaceAll("[^\\)]", "").length()) {
-                    System.out.println("Не равное количество открывающих и закрывающих скобок");
-                    System.exit(0);
-                }
-                if (str.matches("^[\\*\\/].*") || str.matches(".*[-\\*\\/\\+]$")) {
-                    System.out.println("Выражение не может начинаться со знака умножения или деления\n" +
-                            "или заканчиваться любым из операторов");
-                    System.exit(0);
-                }
-
+            if (str != null && checkStr(str)) {
                 while (!str.matches("\\d+")) {
                     //находим выражение без вложенных скобок
                     Pattern p = Pattern.compile("\\([-\\d\\+\\*\\/]*\\)");
@@ -31,7 +21,7 @@ public class Main {
                     }
 
                     if (!str.contains("(")) {
-                        //если нет скобок прсото считаем
+                        //если нет скобок просто считаем
                         str = calculate(str);
                         break;
                     }
@@ -58,8 +48,8 @@ public class Main {
                         Integer.parseInt(value[0]) * Integer.parseInt(value[1]) :
                         Integer.parseInt(value[0]) / Integer.parseInt(value[1]);
                 str = str.replaceFirst(m.group().replaceAll("\\*", "\\\\*").
-                                                 replaceAll("\\/", "\\\\/"),
-                                        String.valueOf(res));
+                                replaceAll("\\/", "\\\\/"),
+                        String.valueOf(res));
                 break;
             }
         }
@@ -72,12 +62,28 @@ public class Main {
                         Integer.parseInt(value[0]) + Integer.parseInt(value[1]) :
                         Integer.parseInt(value[0]) - Integer.parseInt(value[1]);
                 str = str.replaceFirst(m.group().replaceAll("\\+", "\\\\+").
-                                                 replaceAll("\\-", "\\\\-"),
-                                        String.valueOf(res));
+                                replaceAll("\\-", "\\\\-"),
+                        String.valueOf(res));
                 break;
             }
         }
         return str;
     }
 
+    private static boolean checkStr(String str) {
+        if (!str.matches("[-\\/\\*\\+\\(\\)\\d]*")) {
+            System.out.println("Не верный формат выражения");
+            return false;
+        }
+        if (str.replaceAll("[^\\(]", "").length() != str.replaceAll("[^\\)]", "").length()) {
+            System.out.println("Не равное количество открывающих и закрывающих скобок");
+            return false;
+        }
+        if (str.matches("^[\\*\\/].*") || str.matches(".*[-\\*\\/\\+]$")) {
+            System.out.println("Выражение не может начинаться со знака умножения или деления\n" +
+                    "или заканчиваться любым из операторов");
+            return false;
+        }
+        return true;
+    }
 }
