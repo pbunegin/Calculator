@@ -3,21 +3,21 @@ import java.util.regex.Pattern;
 
 public class Calculator {
 
-    private final String groupBrackets = "\\([-\\d\\+\\*\\/]*\\)";
-    private final String groupMultiDiv = "\\d+[\\*\\/]\\d+";
-    private final String groupPlusMinus = "\\d+[-\\+]\\d+";
-    private final String multiOrDiv = "[\\*\\/]";
-    private final String minusOrPlus = "[-\\+]";
-    private final String digMultiDig = "\\d+[\\*]\\d+";
-    private final String digPlusDig = "\\d+[\\+]\\d+";
-    private final String brackets = "[\\(\\)]";
-    private final String digit = "\\d+";
+    private final static String GROUP_BRACKETS = "\\([-\\d\\+\\*\\/]*\\)";
+    private final static String GROUP_MULTI_DIV = "\\d+[\\*\\/]\\d+";
+    private final static String GROUP_PLUS_MINUS = "\\d+[-\\+]\\d+";
+    private final static String MULTI_OR_DIV = "[\\*\\/]";
+    private final static String MINUS_OR_PLUS = "[-\\+]";
+    private final static String DIG_MULTI_DIG = "\\d+[\\*]\\d+";
+    private final static String DIG_PLUS_DIG = "\\d+[\\+]\\d+";
+    private final static String BRACKETS = "[\\(\\)]";
+    private final static String DIGIT = "\\d+";
 
     public String calculate(String exp) {
         if (checkExp(exp)) {
-            while (!exp.matches(digit)) {
+            while (!exp.matches(DIGIT)) {
                 //находим выражение без вложенных скобок
-                Pattern p = Pattern.compile(groupBrackets);
+                Pattern p = Pattern.compile(GROUP_BRACKETS);
                 Matcher m = p.matcher(exp);
                 try {
                     while (m.find()) {
@@ -37,25 +37,25 @@ public class Calculator {
     }
 
     private String calcGroup(String str) throws ArithmeticException {
-        str = str.replaceAll(brackets, "");
+        str = str.replaceAll(BRACKETS, "");
         while (str.contains("*") || str.contains("/")) {
-            Pattern p = Pattern.compile(groupMultiDiv);
+            Pattern p = Pattern.compile(GROUP_MULTI_DIV);
             Matcher m = p.matcher(str);
             m.find();
-            String[] value = m.group().split(multiOrDiv);
-            Integer res = m.group().matches(digMultiDig) ?
+            String[] value = m.group().split(MULTI_OR_DIV);
+            Integer res = m.group().matches(DIG_MULTI_DIG) ?
                     Integer.parseInt(value[0]) * Integer.parseInt(value[1]) :
                     Integer.parseInt(value[0]) / Integer.parseInt(value[1]);
             str = str.replaceFirst(m.group().replaceAll("\\*", "\\\\*").
                             replaceAll("\\/", "\\\\/"),
                     String.valueOf(res));
         }
-        while (!str.matches(digit)) {
-            Pattern p = Pattern.compile(groupPlusMinus);
+        while (!str.matches(DIGIT)) {
+            Pattern p = Pattern.compile(GROUP_PLUS_MINUS);
             Matcher m = p.matcher(str);
             m.find();
-            String[] value = m.group().split(minusOrPlus);
-            Integer res = m.group().matches(digPlusDig) ?
+            String[] value = m.group().split(MINUS_OR_PLUS);
+            Integer res = m.group().matches(DIG_PLUS_DIG) ?
                     Integer.parseInt(value[0]) + Integer.parseInt(value[1]) :
                     Integer.parseInt(value[0]) - Integer.parseInt(value[1]);
             str = str.replaceFirst(m.group().replaceAll("\\+", "\\\\+").
