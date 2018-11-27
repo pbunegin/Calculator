@@ -11,6 +11,7 @@ public class Calculator {
     private final static String DIGIT = "\\d+";
 
     public String calculate(String exp) {
+        exp = exp.replaceAll("\\s", "");
         Pattern p = Pattern.compile(GROUP_BRACKETS);
         if (checkExp(exp)) {
             while (!exp.matches(DIGIT)) {
@@ -27,16 +28,18 @@ public class Calculator {
                     }
                 } catch (ArithmeticException e) {
                     System.out.println("Ошибка, возможно вы пытались выполнить деление на ноль");
+                    return null;
                 }
             }
+            return exp;
         }
-        return exp;
+        return null;
     }
 
-    private String calcGroup(String str) throws ArithmeticException {
+    public String calcGroup(String str) throws ArithmeticException {
         str = str.replaceAll(BRACKETS, "");
         Pattern p;
-        while (!str.matches(DIGIT)) {
+        while (!str.matches("[-]?" + DIGIT)) {
             if (str.contains("*") || str.contains("/")) {
                 p = Pattern.compile(GROUP_MULTI_DIV);
             } else {
@@ -53,7 +56,7 @@ public class Calculator {
         return str;
     }
 
-    private int calcExp(String numberOne, String operator, String numberTwo) {
+    public int calcExp(String numberOne, String operator, String numberTwo) throws ArithmeticException {
         int a = Integer.parseInt(numberOne);
         int b = Integer.parseInt(numberTwo);
         switch (operator) {
@@ -69,11 +72,12 @@ public class Calculator {
         return 0;
     }
 
-    private static boolean checkExp(String str) {
+    public boolean checkExp(String str) {
         if (str == null)
             return false;
         if (!str.matches("[-\\/\\*\\+\\(\\)\\d]*")) {
-            System.out.println("Не верный формат выражения");
+            System.out.println("Не верный формат выражения.\n" +
+                    "Выражение может содержать только операторы *, /, +, -, скобки и цифры");
             return false;
         }
         if (str.replaceAll("[\\(]", "").length() != str.replaceAll("[\\)]", "").length()) {
