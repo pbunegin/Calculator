@@ -1,52 +1,71 @@
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.text.ParseException;
-
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CalculatorTest {
     static Calculator calculator;
 
     @BeforeAll
-    static void createCalc(){
+    static void createCalc() {
         calculator = new Calculator();
     }
 
     @Test
     void calculate() {
-        assertEquals("2371", calculator.calculate("4*5/(6-5)*5+6*8+(6*5*(5+4)*8+(11*4-5*5+6/5*5)+44-5)"));
+        String[] res1 = {"2371", "-45", "-311"};
+        String[] exp1 = {
+                calculator.calculate("4*5/(6-5)*5+6*8+(6*5*(5+4)*8+(11*4-5*5+6/5*5)+44-5)"),
+                calculator.calculate("-5*9"),
+                calculator.calculate("4+5*9-8*5*9")
+        };
+
+        assertThat(res1, equalTo(exp1));
+
         assertNull(calculator.calculate("4+5/0"));
-        assertThrows(NullPointerException.class,()->calculator.calcGroup(null));
         assertNull(calculator.calculate("*8+5"));
+        assertNull(calculator.calculate("(8+5"));
+        assertThrows(NullPointerException.class, () -> calculator.calculate(null));
     }
 
     @Test
     void calcGroup() {
         assertEquals("49", calculator.calcGroup("4+5*9-7/8"));
         assertEquals("-45", calculator.calcGroup("-5*9"));
-        assertEquals("-311", calculator.calcGroup("4+5*9-8*5*9"));
-        assertThrows(ArithmeticException.class,()->calculator.calcGroup("4+5*9-7/0"));
-        assertThrows(NullPointerException.class,()->calculator.calcGroup(null));
+        assertEquals("-311", calculator.calculate("4+5*9-8*5*9"));
+
+        assertThrows(ArithmeticException.class, () -> calculator.calcGroup("4+5*9-7/0"));
+        assertThrows(NullPointerException.class, () -> calculator.calcGroup(null));
     }
 
     @Test
     void calcExp() {
-        assertEquals(20,calculator.calcExp("4","*","5"));
-        assertEquals(0,calculator.calcExp("4","/","5"));
-        assertEquals(2,calculator.calcExp("6","/","3"));
-        assertEquals(30,calculator.calcExp("100","-","70"));
-        assertEquals(33,calculator.calcExp("16","+","17"));
+        int[] res1 = {20, 0, 2, 30, 33};
+        int[] exp1 = {
+                calculator.calcExp("4", "*", "5"),
+                calculator.calcExp("4", "/", "5"),
+                calculator.calcExp("6", "/", "3"),
+                calculator.calcExp("100", "-", "70"),
+                calculator.calcExp("16", "+", "17")
+        };
 
-        assertThrows(ArithmeticException.class,()->calculator.calcExp("5","/","0"));
-        assertThrows(NumberFormatException.class,()->calculator.calcExp("5","/",null));
+        assertThat(res1, equalTo(exp1));
+
+        assertThrows(ArithmeticException.class, () -> calculator.calcExp("5", "/", "0"));
+        assertThrows(NumberFormatException.class, () -> calculator.calcExp("5", "/", null));
+        assertThrows(NumberFormatException.class, () -> calculator.calcExp("5", "/", "\\)"));
+        assertThrows(NullPointerException.class, () -> calculator.calcExp("5", null, "5"));
     }
 
     @Test
     void checkExp() {
         assertTrue(calculator.checkExp("(5+6)"));
         assertTrue(calculator.checkExp("5+6"));
+        assertTrue(calculator.checkExp("4+5*9-8*5*9"));
+        assertTrue(calculator.checkExp("4+5/0"));
+
         assertFalse(calculator.checkExp("(5+6"));
         assertFalse(calculator.checkExp(null));
         assertFalse(calculator.checkExp("*8+5"));
